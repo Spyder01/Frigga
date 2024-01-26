@@ -68,27 +68,29 @@ parse :: proc (args_raw: []string, args: []Arg) -> (map[string]ArgValueType, Arg
         }
 
         for arg in args {
-            if arg_raw == arg.annotation || arg_raw == arg.secondary_annotaion {
-                found = true
+            match := arg_raw == arg.annotation || arg_raw == arg.secondary_annotaion
 
-                #partial switch arg.type {
+                switch arg.type {
                     
                     case ArgType.STRING:
-                        curr_arg = arg.name
+                        if match {
+                            curr_arg = arg.name
+                            found = true
+                        }
                     case ArgType.BOOL: 
-                        values[arg.name] = true
-                        curr_arg = ""
+                        if match {
+                            values[arg.name] = true
+                            curr_arg = ""
+                            found = true
+                        }
+                    case ArgType.DEFAULT:
+                        if obtained_default && arg != default_arg {
+                            return nil, MultipleDefaultError{}
+                        }
+
+                        default_arg = arg
                 }
             }
-
-            if arg.type == ArgType.DEFAULT {
-                if obtained_default && arg != default_arg {
-                    return nil, MultipleDefaultError{}
-                }
-
-                default_arg = arg
-            }
-        }
 
         if !found {
             if obtained_default || curr_arg != "" || default_arg.name == "" {
