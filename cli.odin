@@ -6,6 +6,8 @@ import "core:fmt"
 
 ArgType :: distinct enum {BOOL, STRING, DEFAULT}
 ArgValueType :: distinct union {bool, string}
+DEFAULT_FLAG := ""
+
 
 Arg :: struct {
     name: string,
@@ -52,7 +54,17 @@ get_error_message :: proc (err: ArgParseError) -> string {
 }
 
 
-parse :: proc (args_raw: []string, args: []Arg) -> (map[string]ArgValueType, ArgParseError) {
+parse :: proc (args: []Arg, args_raw_: []string = nil) -> (map[string]ArgValueType, ArgParseError) {
+    args_raw: []string;
+
+    if args_raw_ == nil {
+        args_raw = os.args[1:];
+    } 
+    else {
+        args_raw = args_raw_
+    }
+
+
     values := make(map[string]ArgValueType)
     curr_arg := ""
     obtained_default := false
@@ -135,13 +147,17 @@ check_arg_not_found :: proc (args: []Arg, values: ^map[string]ArgValueType) ->  
 }
 
 
+define_arg :: proc (name: string, flag: string, secondary_flag: string = "", arg_type: ArgType = ArgType.STRING, required: bool = false, default_val: ArgValueType = nil) -> Arg {
+    return Arg {name, flag, secondary_flag, arg_type, required, default_val}
+}
+
 main :: proc() {
     args := os.args[1:]
     
-    arg_map, err:= parse(args, []Arg{
+    arg_map, err:= parse([]Arg{
         Arg {"suhan", "--server", "-s", ArgType.STRING, true, nil},
         Arg {"sss", "--flag", "-f", ArgType.BOOL, false, nil},
-        Arg {"default", "", "", ArgType.DEFAULT, true, "suhan"}
+        Arg {"default", DEFAULT_FLAG, DEFAULT_FLAG, ArgType.DEFAULT, true, "suhan"}
     })
 
     if err != nil {
