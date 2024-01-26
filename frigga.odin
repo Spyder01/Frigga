@@ -1,4 +1,4 @@
-package sif
+package frigga
 
 import "core:strings"
 import "core:os"
