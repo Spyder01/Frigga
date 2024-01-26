@@ -1,4 +1,4 @@
-package cli 
+package sif
 
 import "core:strings"
 import "core:os"
@@ -15,7 +15,8 @@ Arg :: struct {
     secondary_annotaion: string, 
     type: ArgType,
     required: bool,
-    default: ArgValueType
+    default: ArgValueType,
+    help: string
 }
 
 
@@ -147,6 +148,6 @@ check_arg_not_found :: proc (args: []Arg, values: ^map[string]ArgValueType) ->  
 }
 
 
-define_arg :: proc (name: string, flag: string, secondary_flag: string = "", arg_type: ArgType = ArgType.STRING, required: bool = false, default_val: ArgValueType = nil) -> Arg {
-    return Arg {name, flag, secondary_flag, arg_type, required, default_val}
+define_arg :: proc (name: string, flag: string, secondary_flag: string = "", arg_type: ArgType = ArgType.STRING, required: bool = false, default_val: ArgValueType = nil, help: string = "") -> Arg {
+    return Arg {name, flag, secondary_flag, arg_type, required, default_val, help}
 }
