@@ -150,20 +150,3 @@ check_arg_not_found :: proc (args: []Arg, values: ^map[string]ArgValueType) ->  
 define_arg :: proc (name: string, flag: string, secondary_flag: string = "", arg_type: ArgType = ArgType.STRING, required: bool = false, default_val: ArgValueType = nil) -> Arg {
     return Arg {name, flag, secondary_flag, arg_type, required, default_val}
 }
-
-main :: proc() {
-    args := os.args[1:]
-    
-    arg_map, err:= parse([]Arg{
-        Arg {"suhan", "--server", "-s", ArgType.STRING, true, nil},
-        Arg {"sss", "--flag", "-f", ArgType.BOOL, false, nil},
-        Arg {"default", DEFAULT_FLAG, DEFAULT_FLAG, ArgType.DEFAULT, true, "suhan"}
-    })
-
-    if err != nil {
-        fmt.println(get_error_message(err))
-    }
-    else {
-        fmt.println(arg_map)
-    }
-}
