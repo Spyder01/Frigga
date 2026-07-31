@@ -1,0 +1,23 @@
+name: Run Profiler
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  run-profiler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Pull docker image
+        run: docker pull castimaging/profiler-cli:latest
+
+      - name: Run Profiler
+        run: |
+         cd ${{ github.workspace }}
+          git_folder=$(basename "$(git rev-parse --show-toplevel)") 
+          # The git folder name is mapped to the project name
+          docker run -v $(pwd):/fastScan/sourceCode castimaging/profiler-cli:latest /fastScan/sourceCode -s https://d2xekhfunbrl0c.cloudfront.net/v2 --repo-id ${{github.repository_id}} --run-id ${{github.run_id}} --run-attempt ${{ github.run_attempt }} -n $git_folder -c profiler-github -ci -nb
